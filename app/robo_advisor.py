@@ -9,6 +9,8 @@ import os
 import csv
 import statistics
 import datetime
+import plotly
+import plotly.graph_objects as go
 #import pandas
 
 
@@ -68,8 +70,11 @@ parsed_response = json.loads(response.text)
 
 
 tsd = parsed_response["Time Series (Daily)"]
-for d in tsd:
-    print(tsd[d]["1. open"])
+#print(tsd)
+#print ([d for d in tsd])
+#for d in tsd:
+    #print(type(tsd))
+   # print(type(d["4. close"]))
 
  #ToDO Sort just to make sure
 
@@ -100,8 +105,11 @@ recent_low = (tsd[latest_day]["3. low"])
 
 high_list = []
 for date in dates:
+    print(type(date))
     high_price = float(tsd[date]["2. high"])
     high_list.append(high_price)
+
+#
 #print (high_list)
 #breakpoint()
 
@@ -155,5 +163,11 @@ print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
 
+dates.sort(reverse=True)
 #todo plot graph of the recent prices
- 
+#tsd.sort(key = [tsd[d] for d in tsd], reverse = True)
+#print (tsd)
+plotly.offline.plot({
+    "data": [go.Scatter(x=[date for date in tsd], y=[float(tsd[date]["4. close"]) for date in tsd])],
+    "layout": go.Layout(title=f"{symbol} Stock Chart")
+}, auto_open=True)
