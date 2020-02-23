@@ -37,9 +37,9 @@ print("REQUESTING SOME DATA FROM THE INTERNET...")
 #API_KEY = "PXGNWMUO97DNAVPX"
 API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS")
 
-symbol = input("Enter a stock ticker to analyze and generate a rec for\t") #TODO ask for a user input
+symbol = (input("Enter a stock ticker to analyze and generate a rec for\t")).upper() #TODO ask for a user input
 
-
+#breakpoint()
 
 request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"
 print("URL:", request_url)
@@ -70,15 +70,9 @@ parsed_response = json.loads(response.text)
 
 
 tsd = parsed_response["Time Series (Daily)"]
-#print(tsd)
-#print ([d for d in tsd])
-#for d in tsd:
-    #print(type(tsd))
-   # print(type(d["4. close"]))
 
- #ToDO Sort just to make sure
 
-CSVfilePath = os.path.join(os.path.dirname(__file__), "..", "data", symbol + "stock.csv")
+CSVfilePath = os.path.join(os.path.dirname(__file__), "..", "data", "prices_" +symbol + ".csv")
 
 print (os.path.abspath(CSVfilePath))
 #breakpoint()
@@ -105,7 +99,7 @@ recent_low = (tsd[latest_day]["3. low"])
 
 high_list = []
 for date in dates:
-    print(type(date))
+    #print(type(date))
     high_price = float(tsd[date]["2. high"])
     high_list.append(high_price)
 
@@ -146,6 +140,8 @@ now = datetime.datetime.now()
 request_time = now.strftime("%Y-%m-%d %I:%M %p")
 
 
+
+
 print("-------------------------")
 print(f"SELECTED SYMBOL: {symbol}")
 print("-------------------------")
@@ -163,7 +159,7 @@ print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
 
-dates.sort(reverse=True)
+#dates.sort(reverse=True)
 #todo plot graph of the recent prices
 #tsd.sort(key = [tsd[d] for d in tsd], reverse = True)
 #print (tsd)
