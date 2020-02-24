@@ -1,63 +1,18 @@
-# robo-advisor
+# robo-advisor project README
 
 ## Setup
 
-### Repo Setup
+## Installation
 
-Use the GitHub.com online interface to create a new remote project repository called something like "robo-advisor". When prompted by the GitHub.com online interface, let's get in the habit of adding a "README.md" file and a Python-flavored ".gitignore" file (and also optionally a "LICENSE") during the repo creation process. After this process is complete, you should be able to view the repo on GitHub.com at an address like `https://github.com/YOUR_USERNAME/robo-advisor`.
+Fork this remote repository, then "clone" or download your remote copy onto your local computer.
 
-After creating the remote repo, use GitHub Desktop software or the command-line to download or "clone" it onto your computer. Choose a familiar download location like the Desktop.
+Then navigate there from the command line (subsequent commands assume you are running them from the local repository's root directory):
 
 After cloning the repo, navigate there from the command-line:
 
 ```sh
 cd ~/Desktop/robo-advisor
 ```
-
-Use your text editor or the command-line to create a new sub-directory called "app" with a file called "robo_advisor.py", and then place the following contents inside:
-
-```py
-# app/robo_advisor.py
-
-print("-------------------------")
-print("SELECTED SYMBOL: XYZ")
-print("-------------------------")
-print("REQUESTING STOCK MARKET DATA...")
-print("REQUEST AT: 2018-02-20 02:00pm")
-print("-------------------------")
-print("LATEST DAY: 2018-02-20")
-print("LATEST CLOSE: $100,000.00")
-print("RECENT HIGH: $101,000.00")
-print("RECENT LOW: $99,000.00")
-print("-------------------------")
-print("RECOMMENDATION: BUY!")
-print("RECOMMENDATION REASON: TODO")
-print("-------------------------")
-print("HAPPY INVESTING!")
-print("-------------------------")
-```
-
-Make sure to save Python files like this whenever you're done editing them. After setting up a virtual environment, we will be ready to run this file.
-
-
-
-
-Use your text editor or the command-line to create a new file called "requirements.txt", and then place the following contents inside:
-
-```
-requests
-python-dotenv
-```
-
-After setting up a virtual environment, we will be ready to install these packages.
-
-
-
-
-
-
-
-
 
 
 
@@ -76,11 +31,37 @@ From within the virtual environment, install the required packages specified in 
 ```sh
 pip install -r requirements.txt
 ```
+### Security Requirements
+From your current position in the command line. Create a .env file by calling "code .env" if you use the VSCode Text Editor or create the file in your own personal way inside of this directory:
+```sh
+code .env
+```
+The .env file will contain 3 variables named SENDGRID_API_KEY, MY_EMAIL_ADDRESS, and ALPHAVANTAGE_API_KEY
 
-From within the virtual environment, demonstrate your ability to run the Python script from the command-line:
+### Sendgrid API Installation
+First, sign up for a free account here (https://signup.sendgrid.com/), then click the link in a confirmation email to verify your account. Then create an API Key here (https://app.sendgrid.com/settings/api_keys) with "full access" permissions.
+
+To setup the usage examples below, store the API Key value in an environment variable called SENDGRID_API_KEY. Also set an environment variable called MY_EMAIL_ADDRESS to be the email address you just associated with your SendGrid account (e.g. "abc123@gmail.com"). You will send emails from this account
+
+
+### Alpha Vantage API Installation
+Claim your Alpha Vantage API Key by entering your email address on this website (https://www.alphavantage.co/support/#api-key). After receiving your API key place it into a environment variable in your .env file called ALPHAVANTAGE_API_KEY
+
+## Usage
+
+
+
+Run the program by calling
+```sh
+python robo-advisor/app/robo_advisor.py
+```
+and following the on screen instructions
+
+If done correctly, any stock that you analyzed will have its information output into a csv file inside of the /data directory.
 
 ```sh
-python app/robo_advisor.py
-```
+ ~/Desktop/robo-advisor/data
+ ```
 
-If you see the example output, you're ready to move on to project development. This would be a great time to make any desired modifications to your project's "README.md" file (like adding instructions for how to setup and run the app like you've just done), and then make your first commit, with a message like "Setup the repo".
+Also warning, the program automatically creates a line chart and opens the chart in your web browser. You have to return to the terminal or command line that you ran the program from to see the recommendations.
+
