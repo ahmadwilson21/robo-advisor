@@ -47,6 +47,10 @@ API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS") #Gets API key
 
 symbol = (input("Enter a stock ticker to analyze and generate a rec for\t")).upper() #aks user for stock ticker
 
+#Checks to see if the symbol is not a string of characters, so if it has any numbers then it will ouput an error
+if (symbol.isalpha() == False): 
+    print(f"OOPS couldn't find that symbol {symbol}, please try again")
+    exit()
 
 request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"#URL/API for requesting the stock data
 
