@@ -11,6 +11,8 @@ import statistics
 import datetime
 import plotly
 import plotly.graph_objects as go
+from send_email import *
+
 #import pandas
 
 
@@ -25,57 +27,49 @@ def to_usd(my_price):
     return f"${my_price:,.2f}" #> $12,000.71
 
 
-
-#ToDo Output the desired output to a csv file
-
-
-
-#breakpoint()
 load_dotenv()
+
+#Asks user for preliminary info necessary for sending email updates
+email_flag = False #flag that lets program know if we need to send an email or not
+to_email = "abc@gmail.com"#Email for sending the updates to 
+email_prompt = (input("Would you like to receive Email notifications for fluctuations in price? (y/n)\t")).upper()
+if (email_prompt == "Y"):
+    email_flag = True
+    to_email = input("Enter your email address\t(abc@email.com)\t")
+else:
+    print("No emails will be sent")
+
+
+
 print("REQUESTING SOME DATA FROM THE INTERNET...")
 
-#API_KEY = "PXGNWMUO97DNAVPX"
-API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS")
+API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS") #Gets API key from .env file
 
-symbol = (input("Enter a stock ticker to analyze and generate a rec for\t")).upper() #TODO ask for a user input
+symbol = (input("Enter a stock ticker to analyze and generate a rec for\t")).upper() #aks user for stock ticker
 
-#breakpoint()
 
-request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"
-print("URL:", request_url)
+request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"#URL/API for requesting the stock data
 
 response = requests.get(request_url)
 
-#handle response errors:
 
+#Exits the program if there are any response errors:
 if ("Error Message" in response.text):
     print(f"OOPS couldn't find that symbol {symbol}, please try again")
     exit()
 
 
 
-print(response.status_code)
+
+parsed_response = json.loads(response.text) #converts json into python dictionary
 
 
+tsd = parsed_response["Time Series (Daily)"]#accesses the stock's information across 100 days
 
-#print(response.text)
-
-
-
-parsed_response = json.loads(response.text)
-
-#print(parsed_response) #> list
-#breakpoint()
-#CSV_fileName = symbol
-
-
-tsd = parsed_response["Time Series (Daily)"]
-
-
+#Creates filepath for the eventual csv file inside of a folder called data
 CSVfilePath = os.path.join(os.path.dirname(__file__), "..", "data", "prices_" +symbol + ".csv")
 
-print (os.path.abspath(CSVfilePath))
-#breakpoint()
+#Writes each date's stock info for the last 100 days into a csv file
 with open (CSVfilePath, "w") as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames =["timestamp", "open", "close", "high", "low", "volume"])
     writer.writeheader()
@@ -88,43 +82,39 @@ with open (CSVfilePath, "w") as csv_file:
         "low": tsd[dates]["3. low"], 
         "volume": tsd[dates]["5. volume"]
         })
-dates = list(tsd.keys())
-latest_day = dates[0]
-#print (type(latest_day))
+dates = list(tsd.keys()) #adds dates to a list so that we can access stock info from specific dates (ie. today and yesterday)
+latest_day = dates[0] #provides access to today's stock info
+penultimate_day = dates[1] #provides access to yesterday's stock info
 
-latest_close = (tsd[latest_day]["4. close"])
-recent_high = (tsd[latest_day]["2. high"])
-recent_low = (tsd[latest_day]["3. low"])
-#breakpoint()
 
-high_list = []
+latest_close = (tsd[latest_day]["4. close"])#The most recent closing price of the security
+
+
+
+high_list = [] #list holds all of the recent highs
 for date in dates:
-    #print(type(date))
     high_price = float(tsd[date]["2. high"])
     high_list.append(high_price)
+high_price = max(high_list) #retrieves the highest value from the list of recent highs
 
-#
-#print (high_list)
-#breakpoint()
 
-high_price = max(high_list)
-print(f"Highest price: {high_price}")
-
-print("-----------------------\n---------------------")
-min_list = []
+min_list = []#list holds all of the recent lows
 for date in dates:
     min_price = float(tsd[date]["3. low"])
     min_list.append(min_price)
+min_price = min(min_list)#retrieves the lowest value from the list of recent lows
 
 
-
-min_price = min(min_list)
-print(f"Lowest price: {min_price}")
 high_price = float(high_price)
 latest_close = float(latest_close)
 min_price = float(min_price)
 
 
+"""Recommendation Generation
+Generates rec based on if the latest close price is greater than (sell) or less than (buy)
+80% of the recent high. Also has a hold recommendation if the stock's recent highs and lows
+are relatively the same
+"""
 recommendation =""
 rec_explanation =""
 if latest_close < (0.80 * high_price) and latest_close < (min_price + high_price)/2:
@@ -132,7 +122,7 @@ if latest_close < (0.80 * high_price) and latest_close < (min_price + high_price
     rec_explanation = "Because the stock has fallen by at least 20% of the recent 100 day high, we recommend a buy of the security"
 elif latest_close > 0.80 * high_price and latest_close > (high_price+min_price)/2:
     recommendation = "Sell"
-    rec_explanation = "Because the stock is at least 90% of the recent 100 day high, we recommend a sell of the security"
+    rec_explanation = "Because the stock is at least 80% of the recent 100 day high, we recommend a sell of the security"
 else:
     recommendation = "Hold"
     rec_explanation = "Because the stock's trading sideways "
@@ -141,7 +131,7 @@ request_time = now.strftime("%Y-%m-%d %I:%M %p")
 
 
 
-
+#This prompt provies info on the stock's recent prices and provides buy/sell/hold recommendation
 print("-------------------------")
 print(f"SELECTED SYMBOL: {symbol}")
 print("-------------------------")
@@ -159,11 +149,31 @@ print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
 
-#dates.sort(reverse=True)
-#todo plot graph of the recent prices
-#tsd.sort(key = [tsd[d] for d in tsd], reverse = True)
-#print (tsd)
+
+
+#This plots the stock data in a line chart over the previous 100 days
 plotly.offline.plot({
     "data": [go.Scatter(x=[date for date in tsd], y=[float(tsd[date]["4. close"]) for date in tsd])],
     "layout": go.Layout(title=f"{symbol} Stock Chart")
 }, auto_open=True)
+
+if(email_flag == True):
+    new_price = float(tsd[latest_day]["4. close"]) #Today's close price
+    prev_price = float(tsd[penultimate_day]["4. close"]) #Yesterday's close price
+    
+    #If today's price is 5% greater than yesterday's close then send an email
+    if new_price> prev_price*1.05: #daily rise by 0.5%
+        percent_growth=float((new_price-prev_price)/prev_price)
+        prompt = f"From Robo Advisor\n\nThe stock {symbol} has risen by {(percent_growth*100):.2f}%\nHappy Investing!"
+        sendEmail(to_email,prompt,email_subject=f"{symbol} Up Today")
+
+    #If today's price is 5% less than yesterday's close then send an email
+    elif new_price< prev_price*.95: #daily fall by 0.5%
+        percent_growth=float((new_price-prev_price)/prev_price)
+        prompt = f"From Robo Advisor\n\nThe stock {symbol} has fallen by {(-percent_growth*100):.2f}%\nHappy Investing!"
+        sendEmail(to_email,prompt,email_subject=f"{symbol} Down Today")    
+    
+
+#Modify the logic of your application such that if it detects the stock's price has moved past
+#a given threshold within a given time period (e.g. the price has increased or decreased by more
+#than 5% within the past day), it will send the user a "Price Movement Alert" message via email.

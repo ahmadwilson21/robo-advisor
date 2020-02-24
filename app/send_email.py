@@ -2,13 +2,13 @@
 # adapted from https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/packages/sendgrid.md
 
 import os
-import pprint
+#import pprint
 
 from dotenv import load_dotenv
 import sendgrid
 from sendgrid.helpers.mail import * # source of Email, Content, Mail, etc.
 
-def sendEmail(toEmail, prompt):
+def sendEmail(toEmail, prompt,email_subject):
     """
     This code was taken from a template
     """
@@ -26,7 +26,7 @@ def sendEmail(toEmail, prompt):
 
     from_email = Email(MY_EMAIL_ADDRESS)
     to_email = Email(toEmail)
-    subject = "Georgetown-Grocers Receipt"
+    subject = email_subject
     message_text = prompt
     content = Content("text/plain", message_text)
     mail = Mail(from_email, subject, to_email, content)
@@ -35,16 +35,12 @@ def sendEmail(toEmail, prompt):
 
     response = sg.client.mail.send.post(request_body=mail.get())
 
-    # PARSE RESPONSE
+    
 
-    pp = pprint.PrettyPrinter(indent=4)
+    # Response Error Checking
+    if (response.status_code == 202):
+        print("Email sent successfully")
+    else:
+        print(f"Email not sent correctly. Email: {to_email} or {from_email} may not be real emails")
+    
 
-    print("----------------------")
-    print("EMAIL")
-    print("----------------------")
-    print("RESPONSE: ", type(response))
-    print("STATUS:", response.status_code) #> 202 means success
-    print("HEADERS:")
-    pp.pprint(dict(response.headers))
-    print("BODY:")
-    print(response.body) #> this might be empty. it's ok.)
