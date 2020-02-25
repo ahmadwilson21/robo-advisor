@@ -48,7 +48,7 @@ API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS") #Gets API key
 symbol = (input("Enter a stock ticker to analyze and generate a rec for\t")).upper() #aks user for stock ticker
 
 #Checks to see if the symbol is not a string of characters, so if it has any numbers then it will ouput an error
-if (symbol.isalpha() == False): 
+if (symbol.isalpha() == False or len(symbol)>5): 
     print(f"OOPS couldn't find that symbol {symbol}, please try again")
     exit()
 
@@ -59,7 +59,7 @@ response = requests.get(request_url)
 
 #Exits the program if there are any response errors:
 if ("Error Message" in response.text):
-    print(f"OOPS couldn't find that symbol {symbol}, please try again")
+    print(f"OOPS problem with retrieving the website url, please try again")
     exit()
 
 
