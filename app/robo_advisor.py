@@ -13,7 +13,6 @@ import plotly
 import plotly.graph_objects as go
 from send_email import *
 
-#import pandas
 
 
 def to_usd(my_price):
@@ -178,6 +177,3 @@ if(email_flag == True):
         sendEmail(to_email,prompt,email_subject=f"{symbol} Down Today")    
     
 
-#Modify the logic of your application such that if it detects the stock's price has moved past
-#a given threshold within a given time period (e.g. the price has increased or decreased by more
-#than 5% within the past day), it will send the user a "Price Movement Alert" message via email.
