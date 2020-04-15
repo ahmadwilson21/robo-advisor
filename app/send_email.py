@@ -18,7 +18,7 @@ def sendEmail(toEmail, prompt,email_subject):
         prompt(string) the message that you want to send
         email_subject(string) the subject for the email
     
-    Example: sendEmail("me@123.com", "Reminder, this is an example email")
+    Example: sendEmail("me@123.com", "Reminder, this is an example email", "Email_Sub")
 
     Returns: 202 (if email was sent successfully)
 
