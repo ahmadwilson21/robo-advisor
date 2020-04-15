@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 
 
 load_dotenv()
-
+API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS") #Gets API key from .env file
 def to_usd(my_price):
     """
     Converts a numeric value to usd-formatted string, for printing and display purposes.
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
     print("REQUESTING SOME DATA FROM THE INTERNET...")
 
-    API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS") #Gets API key from .env file
+    
     #breakpoint()
     symbol = (input("Enter a stock ticker to analyze and generate a rec for\t")).upper() #aks user for stock ticker
 
