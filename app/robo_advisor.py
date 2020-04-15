@@ -24,6 +24,14 @@ def to_usd(my_price):
     Returns: $4,000.44
     """
     return f"${my_price:,.2f}" #> $12,000.71
+    
+def dash_attack():
+    """
+    Returns assortment of dashes to separate lines of output
+    Example: dash_attack()
+    Returns: "-------------------------"
+    """
+    return "-------------------------"
 
 
 load_dotenv()
@@ -135,22 +143,22 @@ request_time = now.strftime("%Y-%m-%d %I:%M %p")
 
 
 #This prompt provies info on the stock's recent prices and provides buy/sell/hold recommendation
-print("-------------------------")
+print(dash_attack())
 print(f"SELECTED SYMBOL: {symbol}")
-print("-------------------------")
+print(dash_attack())
 print("REQUESTING STOCK MARKET DATA...")
 print(f"REQUEST AT: {request_time}")
-print("-------------------------")
+print(dash_attack())
 print(f"LATEST DAY: {latest_day}")
 print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
 print(f"RECENT HIGH: {to_usd(float(high_price))}")
 print(f"RECENT LOW: {to_usd(float(min_price))}")
-print("-------------------------")
+print(dash_attack())
 print(f"RECOMMENDATION: {recommendation}!")
 print(f"RECOMMENDATION REASON: {rec_explanation}")
-print("-------------------------")
+print(dash_attack())
 print("HAPPY INVESTING!")
-print("-------------------------")
+print(dash_attack())
 
 
 
