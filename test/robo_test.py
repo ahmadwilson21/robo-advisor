@@ -13,5 +13,6 @@ def test_to_usd():
 
     assert to_usd(2.555556) == "$2.56"
     assert to_usd(2.555556) == "$2.56"
+    assert to_usd(2.555556) == "$2.56"
 
 
