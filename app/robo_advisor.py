@@ -44,7 +44,7 @@ def compile_url(symbol):
 
 def get_response(symbol):
     
-    if str(compile_url(symbol)) != "200":
+    if compile_url(symbol) != 200:
         print(f"OOPS couldn't reach website, please try again")
         exit()
     
@@ -84,6 +84,11 @@ def write_to_csv(rows, csv_filepath):
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
+
+    with open(csv_filepath, "r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        print([row for row in reader])
+        
     
     return True
         
