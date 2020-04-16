@@ -7,7 +7,7 @@ __pycache__/
 # C extensions
 *.so
 data/*
-example_reports/*
+
 # Distribution / packaging
 .Python
 build/
@@ -26,6 +26,7 @@ pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
+temp_prices1.csv
 *.egg
 MANIFEST
 temp-plot.html

@@ -26,17 +26,12 @@ def test_compile_url():
 
 def test_get_response():
     symbol = "MSFT"
-    #assert  (get_response("MSFT")).get('Meta Data')!= None
-    #assert  (get_response("MSFT")).get('Time Series (Daily)')!= None
     parsed_response = get_response(symbol)
 
     assert isinstance(parsed_response, dict)
     assert "Meta Data" in parsed_response.keys()
     assert "Time Series (Daily)" in parsed_response.keys()
     assert parsed_response["Meta Data"]["2. Symbol"] == symbol
-#def test_calculate_price():
- #   assert calculate_prices(get_response("MSFT"))
-
 
 def test_calculate_prices():
      
@@ -97,16 +92,9 @@ def test_write_to_csv():
         {"timestamp": "2019-06-01", "open": '99.2798',  "high": "100.8600", "low": "99.1700",  "close": "100.7900", "volume": "28655624"}
     ]
 
-    example_rows_wrong = [
-        {"timestamp": "2019-06-01", "open": "101.0924", "high": "101.9500", "low": "100.5400", "close": "101.6300", "volume": "22165128"},
-        {"timestamp": "2019-06-07", "open": "102.6500", "high": "102.6900", "low": "100.3800", "close": "100.8800", "volume": "28232197"},
-        {"timestamp": "2019-06-06", "open": "102.4800", "high": "102.6000", "low": "101.9000", "close": "102.4900", "volume": "21122917"},
-        {"timestamp": "2019-06-05", "open": "102.0000", "high": "102.3300", "low": "101.5300", "close": "102.1900", "volume": "23514402"},
-        {"timestamp": "2019-06-04", "open": "101.2600", "high": "101.8600", "low": "100.8510", "close": "101.6700", "volume": "27281623"},
-        {"timestamp": "2019-06-01", "open": '99.2798',  "high": "100.8600", "low": "99.1700",  "close": "100.7900", "volume": "28655624"}
-    ]
+   
 
-    csv_filepath = os.path.join(os.path.dirname(__file__), "example_reports", "temp_prices.csv")
+    csv_filepath = os.path.join(os.path.dirname(__file__), "example_reports", "temp_prices1.csv")
 
     if os.path.isfile(csv_filepath):
         os.remove(csv_filepath)
@@ -125,4 +113,4 @@ def test_write_to_csv():
     with open(csv_filepath, "r") as csv_file:
         reader = csv.DictReader(csv_file)
         assert [row for row in reader] == example_rows
-    # TODO: consider also testing the file contents!
+    
