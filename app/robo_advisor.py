@@ -34,6 +34,12 @@ def dash_attack():
     return "-------------------------"
 
 def compile_url(symbol):
+    """
+    Takes stock ticker, navigates to alphavantage website and returns the website's status code
+    Example: compile_url("MSFT")
+    Returns: 202
+    """
+
     if (symbol.isalpha() == False or len(symbol)>5): 
         print(f"OOPS couldn't find that symbol {symbol}, please try again")
         exit()
@@ -43,6 +49,12 @@ def compile_url(symbol):
     return response.status_code
 
 def get_response(symbol):
+    """
+    Navigates to alphavantage website with specific ticker and returns the stock info in 
+    dictionary format
+    Example: [get_response("MSFT").keys()]
+    Return: ["Time Series(Daily", "Meta Data"]
+    """
     
     if compile_url(symbol) != 200:
         print(f"OOPS couldn't reach website, please try again")
@@ -51,15 +63,51 @@ def get_response(symbol):
     request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"
     response = requests.get(request_url)
     parsed_response = json.loads(response.text)
-    #if ("Error Message" in response.text):
-    #    print(f"OOPS problem with retrieving the website url, please try again")
-    #    exit()
+    
 
-    return parsed_response #check that it has keys for the test
+    return parsed_response 
 
 
 
 def calculate_prices(parsed_response):
+    """
+    Generates list of formatted dictionaies with the stock information from the website
+    Example: 
+    parsed_response = {
+        "Time Series (Daily)": {
+            "2019-06-08": {
+                "1. open": "101.0924",
+                "2. high": "101.9500",
+                "3. low": "100.5400",
+                "4. close": "101.6300",
+                "5. volume": "22165128"
+            },
+            "2019-06-07": {
+                "1. open": "102.6500",
+                "2. high": "102.6900",
+                "3. low": "100.3800",
+                "4. close": "100.8800",
+                "5. volume": "28232197"
+            },
+            "2019-06-06": {
+                "1. open": "102.4800",
+                "2. high": "102.6000",
+                "3. low": "101.9000",
+                "4. close": "102.4900",
+                "5. volume": "21122917"
+            }
+        }
+    
+    calculate_prices(parsed_response)
+
+    returns: [
+        {"timestamp": "2019-06-08", "open": 101.0924, "high": 101.95, "low": 100.54, "close": 101.63, "volume": 22165128},
+        {"timestamp": "2019-06-07", "open": 102.65, "high": 102.69, "low": 100.38, "close": 100.88, "volume": 28232197},
+        {"timestamp": "2019-06-06", "open": 102.48, "high": 102.60, "low": 101.90, "close": 102.49, "volume": 21122917}     
+        ]
+        
+    """
+
     tsd = parsed_response["Time Series (Daily)"]
     rows = []
 
@@ -78,6 +126,17 @@ def calculate_prices(parsed_response):
 
 
 def write_to_csv(rows, csv_filepath):
+    """
+    Generates csv file with dictionaries of stock data captured from the alphavantage website
+    Example: 
+    response = [ {"timestamp": "2019-06-08", "open": 101.0924, "high": 101.95, "low": 100.54, "close": 101.63, "volume": 22165128},
+        {"timestamp": "2019-06-07", "open": 102.65, "high": 102.69, "low": 100.38, "close": 100.88, "volume": 28232197},
+        {"timestamp": "2019-06-06", "open": 102.48, "high": 102.60, "low": 101.90, "close": 102.49, "volume": 21122917},
+    ]
+    write_to_csv(response, "Users/Downloads/price.csv")
+
+    Returns True
+    """
 
     with open (csv_filepath, "w") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames =["timestamp", "open", "close", "high", "low", "volume"])
@@ -121,33 +180,8 @@ if __name__ == "__main__":
 
     print("REQUESTING SOME DATA FROM THE INTERNET...")
 
-    
-    #breakpoint()
+
     symbol = (input("Enter a stock ticker to analyze and generate a rec for\t")).upper() #aks user for stock ticker
-
-
-    #Checks to see if the symbol is not a string of characters, so if it has any numbers then it will ouput an error
-
-    #if (symbol.isalpha() == False or len(symbol)>5): 
-    #    print(f"OOPS couldn't find that symbol {symbol}, please try again")
-    #    exit()
-
-    #request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"#URL/API for requesting the stock data
-    #
-    #response = requests.get(request_url)
-    #
-
-    #Exits the program if there are any response errors:
-
-
-
-
-
-    #parsed_response = json.loads(response.text) #converts json into python dictionary
-
-
-
-
 
     parsed_response = get_response(symbol)
 
@@ -164,44 +198,10 @@ if __name__ == "__main__":
     write_to_csv(rows, CSVfilePath)
 
     tsd = parsed_response["Time Series (Daily)"]#accesses the stock's information across 100 days
-    #Creates filepath for the eventual csv file inside of a folder called data
-
-
-    #Writes each date's stock info for the last 100 days into a csv file
-    #with open (CSVfilePath, "w") as csv_file:
-    #    writer = csv.DictWriter(csv_file, fieldnames =["timestamp", "open", "close", "high", "low", "volume"])
-    #    writer.writeheader()
-    #    for dates in tsd:
-    #        writer.writerow({
-    #        "timestamp": dates,
-    #        "open": tsd[dates]["1. open"], 
-    #        "close": tsd[dates]["4. close"], 
-    #        "high": tsd[dates]["2. high"], 
-    #        "low": tsd[dates]["3. low"], 
-    #        "volume": tsd[dates]["5. volume"]
-    #        })
     dates = list(tsd.keys()) #adds dates to a list so that we can access stock info from specific dates (ie. today and yesterday)
     latest_day = dates[0] #provides access to today's stock info
     penultimate_day = dates[1] #provides access to yesterday's stock info
-    #
-    #
-    #latest_close = (tsd[latest_day]["4. close"])#The most recent closing price of the security
-    #
-    #
-    #
-    #high_list = [] #list holds all of the recent highs
-    #for date in dates:
-    #    high_price = float(tsd[date]["2. high"])
-    #    high_list.append(high_price)
-    #high_price = max(high_list) #retrieves the highest value from the list of recent highs
-    #
-    #
-    #min_list = []#list holds all of the recent lows
-    #for date in dates:
-    #    min_price = float(tsd[date]["3. low"])
-    #    min_list.append(min_price)
-    #min_price = min(min_list)#retrieves the lowest value from the list of recent lows
-    #
+
 
     high_price = float(recent_high)
     latest_close = float(latest_close)
