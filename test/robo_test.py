@@ -94,7 +94,7 @@ def test_write_to_csv():
 
    
 
-    csv_filepath = os.path.join(os.path.dirname(__file__), "example_reports", "temp_prices.csv")
+    csv_filepath = os.path.join(os.path.dirname(__file__), "example_reports", "temp_prices1.csv")
 
     if os.path.isfile(csv_filepath):
         os.remove(csv_filepath)
