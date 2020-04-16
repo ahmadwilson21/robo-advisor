@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 
 
 load_dotenv()
-
+API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS") #Gets API key from .env file
 def to_usd(my_price):
     """
     Converts a numeric value to usd-formatted string, for printing and display purposes.
@@ -44,7 +44,7 @@ def compile_url(symbol):
 
 def get_response(symbol):
     
-    if str(compile_url(symbol)) != "200":
+    if compile_url(symbol) != 200:
         print(f"OOPS couldn't reach website, please try again")
         exit()
     
@@ -84,6 +84,11 @@ def write_to_csv(rows, csv_filepath):
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
+
+    with open(csv_filepath, "r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        print([row for row in reader])
+        
     
     return True
         
@@ -116,7 +121,7 @@ if __name__ == "__main__":
 
     print("REQUESTING SOME DATA FROM THE INTERNET...")
 
-    API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", default = "OOPS") #Gets API key from .env file
+    
     #breakpoint()
     symbol = (input("Enter a stock ticker to analyze and generate a rec for\t")).upper() #aks user for stock ticker
 
