@@ -26,17 +26,12 @@ def test_compile_url():
 
 def test_get_response():
     symbol = "MSFT"
-    #assert  (get_response("MSFT")).get('Meta Data')!= None
-    #assert  (get_response("MSFT")).get('Time Series (Daily)')!= None
     parsed_response = get_response(symbol)
 
     assert isinstance(parsed_response, dict)
     assert "Meta Data" in parsed_response.keys()
     assert "Time Series (Daily)" in parsed_response.keys()
     assert parsed_response["Meta Data"]["2. Symbol"] == symbol
-#def test_calculate_price():
- #   assert calculate_prices(get_response("MSFT"))
-
 
 def test_calculate_prices():
      
@@ -125,4 +120,4 @@ def test_write_to_csv():
     with open(csv_filepath, "r") as csv_file:
         reader = csv.DictReader(csv_file)
         assert [row for row in reader] == example_rows
-    # TODO: consider also testing the file contents!
+    
